@@ -39,6 +39,31 @@ SALIDA_ATHENA = (
 @st.cache_resource
 def obtener_cliente_athena():
 
+    # --------------------------------------------------------
+    # MODO NUBE: Streamlit Community Cloud
+    # --------------------------------------------------------
+    # Si existe una sección [aws] en st.secrets,
+    # se utilizan las credenciales almacenadas allí.
+    # --------------------------------------------------------
+
+    if "aws" in st.secrets:
+
+        return boto3.client(
+            "athena",
+            region_name=st.secrets["aws"]["region"],
+            aws_access_key_id=st.secrets["aws"]["aws_access_key_id"],
+            aws_secret_access_key=st.secrets["aws"]["aws_secret_access_key"],
+            aws_session_token=st.secrets["aws"]["aws_session_token"]
+        )
+
+    # --------------------------------------------------------
+    # MODO LOCAL
+    # --------------------------------------------------------
+    # Si no existen Secrets de Streamlit, Boto3 utiliza
+    # automáticamente las credenciales configuradas
+    # localmente en ~/.aws/credentials.
+    # --------------------------------------------------------
+
     return boto3.client(
         "athena",
         region_name=REGION
